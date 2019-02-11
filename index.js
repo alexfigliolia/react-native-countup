@@ -14,6 +14,8 @@ import Timer from 'react-timer-mixin';
 
 const HALF_RAD = Math.PI/2
 
+let _t_ = null;
+
 export default class AnimateNumber extends Component {
 
   props : {
@@ -93,6 +95,11 @@ export default class AnimateNumber extends Component {
     this.startAnimate()
   }
 
+  componentWillUnmount() {
+    Timer.clearTimeout(_t_);
+    _t_ = null;
+  }
+
   componentWillUpdate(nextProps, nextState) {
 
     // check if start an animation
@@ -131,7 +138,7 @@ export default class AnimateNumber extends Component {
 
     let progress = this.getAnimationProgress()
 
-    Timer.setTimeout(() => {
+    _t_ = Timer.setTimeout(() => {
 
       let value = (this.endWith - this.startFrom)/this.props.steps
       let sign = value >= 0 ? 1 : -1
@@ -144,6 +151,7 @@ export default class AnimateNumber extends Component {
       if (((this.direction) ^ (total <= this.endWith)) === 1) {
         this.dirty = false
         total = this.endWith
+        _t_ = null
         this.props.onFinish(total, this.props.formatter(total))
       }
 
